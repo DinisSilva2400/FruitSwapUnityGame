@@ -6,7 +6,7 @@ public class RadialTimer : MonoBehaviour
 {
     public Image timerImage;
     public float totalTime = 180f;
-    public string sceneToLoad = "GameOver";
+    public string sceneToLoad = "Menu";
 
     private float timeLeft;
     public static RadialTimer Instance { get; private set; }
@@ -44,7 +44,14 @@ public class RadialTimer : MonoBehaviour
 
     void TimerEnded()
     {
-        SceneManager.LoadScene(sceneToLoad);
+        // Guarda o high score antes de mudar de cena
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.EndLevel();
+        }
+
+        // Carrega a cena "Menu"
+        SceneManager.LoadScene("Menu");
     }
 
     public void AddTime(float seconds)
