@@ -5,58 +5,72 @@ public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance;
 
-    public int score = 0;
-    public int highScore = 0;
+    public int score;
+    public int highScore;
 
-    [Tooltip("Arrasta aqui o TextMeshProUGUI do high score")]
-    public TextMeshProUGUI HighScore;
+    [HideInInspector] public TextMeshProUGUI scoreText;
+    [HideInInspector] public TextMeshProUGUI highScoreText;
 
-    [Tooltip("Arrasta aqui o TextMeshProUGUI do score")]
-    public TextMeshProUGUI scoreText;
-
-    [Tooltip("Texto antes do número, ex: 'Score: '")]
     public string prefix = "Score: ";
-
-    [Tooltip("Texto depois do número")]
     public string suffix = "";
 
-    [Header("Particles")]
-    [Tooltip("Particle System da explosão de score")]
     public ParticleSystem scoreParticles;
 
     void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void Start()
     {
-        highScore = PlayerPrefs.GetInt("HighScore", 0); // carrega high score
-        UpdateUI();
+        highScore = PlayerPrefs.GetInt("HighScore", 0);
     }
 
     public void AddScore(int points)
     {
         score += points;
-        highScore = score;
         UpdateUI();
         PlayParticles();
     }
 
-    public void ResetScore()
+    public void EndLevel()
     {
+        // Só atualiza se bater recorde
+        if (score > highScore)
+        {
+            highScore = score;
+            PlayerPrefs.SetInt("HighScore", highScore);
+            PlayerPrefs.Save();
+        }
+
         score = 0;
         UpdateUI();
     }
 
-    void UpdateUI()
+    public void UpdateUI()
     {
         if (scoreText != null)
-            scoreText.text = prefix + score.ToString() + suffix;
+            scoreText.text = prefix + score + suffix;
 
-        if (HighScore != null)
-            HighScore.text = "High Score: " + highScore.ToString();
+        if (highScoreText != null){
+            if(score > highScore){
+                highScoreText.text = "High Score: " + score;
+            }
+            else
+            {
+                highScoreText.text = "High Score: " + highScore;
+            }
+        }
+
+            
     }
 
     void PlayParticles()
@@ -66,19 +80,5 @@ public class ScoreManager : MonoBehaviour
             scoreParticles.Stop();
             scoreParticles.Play();
         }
-    }
-
-    public void EndLevel()
-    {
-        
-        if(score > highScore)
-        {
-            highScore = score;
-            PlayerPrefs.SetInt("HighScore", highScore);
-            PlayerPrefs.Save();
-        }
-
-        UpdateUI(); // atualiza a UI com o novo high score
-        ResetScore(); // opcional: zera o score atual para começar de novo
     }
 }
