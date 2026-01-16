@@ -6,7 +6,7 @@ public class PauseManager : MonoBehaviour
 
     public GameObject pauseMenu;
     public GameObject SettingsMenu;
-    private bool isPaused = false;
+    public static bool isPaused = false;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -53,16 +53,26 @@ public class PauseManager : MonoBehaviour
 
     public void TogglePause()
     {
+        if(SettingsMenu.activeSelf)
+        {
+            return;
+        }
         isPaused = !isPaused;
         if (pauseMenu != null){
             pauseMenu.SetActive(isPaused);
         }
         Time.timeScale = isPaused ? 0f : 1f;
+
+        
     }
 
 
     public void ResumeGame()
     {
+        if(SettingsMenu.activeSelf)
+        {
+            return;
+        }
         isPaused = false;
         if(pauseMenu != null)
         {
@@ -75,11 +85,20 @@ public class PauseManager : MonoBehaviour
 
     public void ExitGame()
     {
+        if(SettingsMenu.activeSelf)
+        {
+            return;
+        }
         Application.Quit();
+        
     }
 
     public void ExitLevel()
     {
+        if(SettingsMenu.activeSelf)
+        {
+            return;
+        }
         Time.timeScale = 1f;
         SceneManager.LoadScene("Menu");
     }

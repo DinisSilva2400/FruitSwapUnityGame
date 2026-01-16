@@ -110,6 +110,7 @@ public class Board : MonoBehaviour
     // -----------------------------------------------------
     public void SelectFruit(Fruit fruit)
     {
+        if(PauseManager.isPaused) return;
         if (isProcessing) return;
 
         if (firstSelected == null)
@@ -151,6 +152,11 @@ public class Board : MonoBehaviour
 
     IEnumerator SwapAndCheck(Fruit a, Fruit b)
     {
+        if(PauseManager.isPaused)
+        {
+            yield break;
+        }
+        
         // bloquear novas ações enquanto processa
         isProcessing = true;
 
@@ -668,6 +674,7 @@ public class Board : MonoBehaviour
     // ======================================================
     public void SwapWithNeighbor(Fruit fruit, Vector2 dir)
     {
+        if(PauseManager.isPaused) return;
         if (isProcessing) return;
 
         // garantir valores inteiros e bloquear diagonais
@@ -694,6 +701,5 @@ public class Board : MonoBehaviour
         StartCoroutine(SwapAndCheck(fruit, neighbor));
     }
 
-    
 }
 

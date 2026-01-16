@@ -33,11 +33,16 @@ DONE:
 
 * Pause Menu finished
 * Started settings Menu
-* Volume settings almost done
+* Volume Settings done 
+* Make the game look better in making
 
 TO DO:
 
-* finish volume settings
-* Make the game look better
+* debug the menu little bugs
+* make the game over menu
+*start working on fruitExplosions on aseprite
+
+
+
 
 
