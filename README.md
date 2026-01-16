@@ -24,4 +24,20 @@ TO DO:
 * Finish pause Menu
 
 
+-----------------------------
+
+
+16/01/26
+
+DONE:
+
+* Pause Menu finished
+* Started settings Menu
+* Volume settings almost done
+
+TO DO:
+
+* finish volume settings
+* Make the game look better
+
 

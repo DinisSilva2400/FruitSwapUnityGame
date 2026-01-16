@@ -497,7 +497,6 @@ public class Board : MonoBehaviour
                                 if (bonusCoroutine != null) StopCoroutine(bonusCoroutine);
                                 bonusCoroutine = StartCoroutine(ShowTimeBonus());
                             }
-                            Debug.Log("Bónus! 4+ frutas em linha horizontal! +10 segundos!");
                         }
                     }
                 }

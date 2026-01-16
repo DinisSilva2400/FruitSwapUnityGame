@@ -1,9 +1,11 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PauseManager : MonoBehaviour
 {
 
     public GameObject pauseMenu;
+    public GameObject SettingsMenu;
     private bool isPaused = false;
 
 
@@ -36,8 +38,14 @@ public class PauseManager : MonoBehaviour
                 else if(name == "ResumeButton"){
                     ResumeGame();
                 }
-                else if(name == "QuitButton"){
-                    
+                else if(name == "ExitButton"){
+                    ExitGame();
+                }
+                else if(name == "ExitLevel"){
+                    ExitLevel();
+                }
+                else if(name == "Settings"){
+                    SettingsMenu.SetActive(true);
                 }
             }
         }
@@ -64,4 +72,15 @@ public class PauseManager : MonoBehaviour
         
     }
 
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+
+    public void ExitLevel()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("Menu");
+    }
 }
