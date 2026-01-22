@@ -57,4 +57,18 @@ TO DO:
 
 
 
+---------------------------
+22/01/26
+
+DONE: 
+* Made new assets to make the game look better 
+* Added a new combo feature too the game(still needs to be fixed)
+
+TO DO:
+* Fix the combos
+* make the combos add more points and time
+* make the game over menu""
+
+
+
 

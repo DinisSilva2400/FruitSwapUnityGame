@@ -321,6 +321,10 @@ public class Board : MonoBehaviour
         int pointsPerFruit = 10;
         int totalMatched = matched.Count;
 
+        if (totalMatched > 0)
+        {
+            ComboManager.Instance.RegisterMatch();
+        }
         // 🔊 som da combinação (igual ao select)
         if (totalMatched > 0 && audioSource != null && matchSound != null)
         {
@@ -353,10 +357,11 @@ public class Board : MonoBehaviour
             // ---- explosão colocada aqui ----
             if (explosionPrefab != null)
             {
-                GameObject exp = Instantiate(explosionPrefab, f.transform.position, Quaternion.identity);
-                Destroy(exp,  1.5f); // limpa as partículas após 1.5s
+                Instantiate(explosionPrefab, f.transform.position, Quaternion.identity);
             }
             // --------------------------------
+
+           
 
             Destroy(f);
         }
