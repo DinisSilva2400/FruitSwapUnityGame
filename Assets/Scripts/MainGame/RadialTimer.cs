@@ -8,7 +8,12 @@ public class RadialTimer : MonoBehaviour
     public float totalTime = 180f;
     public string sceneToLoad = "Menu";
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip timeWarningSound; // Som que toca quando faltam 10 segundos
+
     private float timeLeft;
+    private bool hasPlayedWarning = false; // Garante que o som toca apenas uma vez
     public static RadialTimer Instance { get; private set; }
 
     void Awake()
@@ -35,6 +40,16 @@ public class RadialTimer : MonoBehaviour
         timeLeft -= Time.deltaTime;
         timerImage.fillAmount = timeLeft / totalTime;
 
+        // Tocar som de aviso quando faltam 10 segundos
+        if (timeLeft <= 10f && !hasPlayedWarning)
+        {
+            hasPlayedWarning = true;
+            if (audioSource != null && timeWarningSound != null)
+            {
+                audioSource.PlayOneShot(timeWarningSound);
+            }
+        }
+
         if (timeLeft <= 0)
         {
             timeLeft = 0;
@@ -60,6 +75,12 @@ public class RadialTimer : MonoBehaviour
         if (timeLeft > totalTime)
         {
             timeLeft = totalTime;
+        }
+
+        // Se voltarmos para cima de 10 segundos, reseta a flag
+        if (timeLeft > 10f)
+        {
+            hasPlayedWarning = false;
         }
     }
 }

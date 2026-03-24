@@ -15,6 +15,17 @@ public class Board : MonoBehaviour
     [Header("Effects")]
     public GameObject explosionPrefab; // arrasta aqui o prefab da explosão
 
+    [Header("Bombs")]
+    public Sprite bombSprite; // Arrasta a imagem da bomba aqui
+    public float bombSpawnChance = 0.02f; // 2% de chance de spawn no inicio
+    public float bombSpawnChanceRuntime = 0.1f; // 10% de chance de spawn a meio do jogo
+    public int maxBombsOnBoard = 2; // Máximo de bombas permitidas no board
+    public float bombExplosionDelay = 0.15f; // Delay entre explosões da bomba (em segundos)
+    
+    [Header("Bomb Effects")]
+    public GameObject bombExplosionPrefab; // Prefab de partículas para explosão da bomba
+    public AudioClip bombExplosionSound; // Som da explosão da bomba
+
     private GameObject[,] allFruits;
 
     [Header("Audio slide")]
@@ -66,6 +77,27 @@ public class Board : MonoBehaviour
     }
 
 
+    // Contar quantas bombas estão no board
+    int CountBombsOnBoard()
+    {
+        int bombCount = 0;
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                if (allFruits[x, y] != null)
+                {
+                    Fruit f = allFruits[x, y].GetComponent<Fruit>();
+                    if (f != null && f.isBomb)
+                    {
+                        bombCount++;
+                    }
+                }
+            }
+        }
+        return bombCount;
+    }
+
     // -----------------------------------------------------
     // GERAR TABULEIRO
     // -----------------------------------------------------
@@ -106,6 +138,18 @@ public class Board : MonoBehaviour
                 fs.type = index; // define o tipo da fruta
                 fs.board = this;
 
+                // Chance de ser uma bomba (apenas se não atingimos o limite)
+                if (Random.value < bombSpawnChance && bombSprite != null && CountBombsOnBoard() < maxBombsOnBoard)
+                {
+                    fs.isBomb = true;
+                    // Mudar sprite para bomba
+                    SpriteRenderer sr = fruit.GetComponent<SpriteRenderer>();
+                    if (sr != null)
+                    {
+                        sr.sprite = bombSprite;
+                    }
+                }
+
                 allFruits[x, y] = fruit;
             }
         }
@@ -118,6 +162,9 @@ public class Board : MonoBehaviour
     {
         
         if (isProcessing) return;
+
+        // Bombas não podem ser movidas
+        if (fruit.isBomb) return;
 
         if (firstSelected == null)
         {
@@ -268,6 +315,155 @@ public class Board : MonoBehaviour
 
         return matchFound;
     }
+    // Destroi uma bomba e tudo ao seu redor (4 direções ortogonais) com timing
+    IEnumerator DestroyBombAndSurrounding(int bombX, int bombY)
+    {
+        int pointsPerFruit = 10;
+        int bombPoints = 0;
+        List<(int, int)> cascadeBombs = new List<(int, int)>(); // Bombas para ativar em cascata
+
+        // Verificar se a bomba ainda existe
+        if (allFruits[bombX, bombY] == null)
+            yield break;
+
+        // Esperar um pouco para as frutas matched explodirem primeiro
+        yield return new WaitForSeconds(bombExplosionDelay);
+
+        // FASE 2: Destruir a bomba (centro)
+        if (allFruits[bombX, bombY] != null)
+        {
+            GameObject bomb = allFruits[bombX, bombY];
+            bombPoints += pointsPerFruit; // Contar pontos da bomba
+
+            // Explosão da bomba com efeito e som especial
+            if (bombExplosionPrefab != null)
+            {
+                Instantiate(bombExplosionPrefab, bomb.transform.position, Quaternion.identity);
+            }
+
+            // Som da explosão da bomba
+            if (audioSource != null && bombExplosionSound != null)
+            {
+                audioSource.PlayOneShot(bombExplosionSound);
+            }
+
+            allFruits[bombX, bombY] = null;
+            Destroy(bomb);
+        }
+
+        // Esperar um pouco antes de explodir as frutas à volta
+        yield return new WaitForSeconds(bombExplosionDelay);
+
+        // FASE 3: Destruir os 4 frutas à volta (ortogonais)
+        int[] offsetsX = { 1, -1, 0, 0 };  // direita, esquerda
+        int[] offsetsY = { 0, 0, 1, -1 };  // cima, baixo
+
+        for (int i = 0; i < offsetsX.Length; i++)
+        {
+            int checkX = bombX + offsetsX[i];
+            int checkY = bombY + offsetsY[i];
+
+            // Verificar se está dentro do board
+            if (checkX >= 0 && checkX < width && checkY >= 0 && checkY < height)
+            {
+                if (allFruits[checkX, checkY] != null)
+                {
+                    GameObject fruit = allFruits[checkX, checkY];
+                    Fruit f = fruit.GetComponent<Fruit>();
+
+                    // Se é uma bomba, adiciona à lista de cascata
+                    if (f.isBomb)
+                    {
+                        cascadeBombs.Add((checkX, checkY));
+                    }
+
+                    bombPoints += pointsPerFruit; // Contar pontos
+
+                    // Explosão normal para frutas
+                    if (explosionPrefab != null)
+                    {
+                        Instantiate(explosionPrefab, fruit.transform.position, Quaternion.identity);
+                    }
+
+                    allFruits[checkX, checkY] = null;
+                    Destroy(fruit);
+
+                    // Pequeno delay entre cada fruta à volta da bomba
+                    yield return new WaitForSeconds(bombExplosionDelay * 0.5f);
+                }
+            }
+        }
+
+        // Adicionar pontos da bomba e frutas à volta
+        if (bombPoints > 0 && ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.AddScore(bombPoints);
+        }
+
+        // FASE 4: Ativar bombas em cascata
+        foreach (var (cascadeX, cascadeY) in cascadeBombs)
+        {
+            // Verificar se a bomba cascata ainda existe na posição
+            if (allFruits[cascadeX, cascadeY] != null)
+            {
+                Fruit cascadeFruit = allFruits[cascadeX, cascadeY].GetComponent<Fruit>();
+                if (cascadeFruit != null && cascadeFruit.isBomb)
+                {
+                    yield return StartCoroutine(DestroyBombAndSurrounding(cascadeX, cascadeY));
+                }
+            }
+        }
+    }
+    // Destruir bombas adjacentes (APENAS horizontal/vertical) às frutas matched
+    IEnumerator DestroyAdjacentBombs(HashSet<GameObject> matched)
+    {
+        HashSet<GameObject> bombsToDestroy = new HashSet<GameObject>();
+
+        foreach (GameObject matchedFruit in matched)
+        {
+            Fruit mf = matchedFruit.GetComponent<Fruit>();
+            int mx = mf.x;
+            int my = mf.y;
+
+            // Verificar APENAS as 4 direções ortogonais (sem diagonais)
+            // Direita, Esquerda, Cima, Baixo
+            int[] offsetsX = { 1, -1, 0, 0 };
+            int[] offsetsY = { 0, 0, 1, -1 };
+
+            for (int i = 0; i < offsetsX.Length; i++)
+            {
+                int checkX = mx + offsetsX[i];
+                int checkY = my + offsetsY[i];
+
+                // Verificar se está dentro do board
+                if (checkX >= 0 && checkX < width && checkY >= 0 && checkY < height)
+                {
+                    if (allFruits[checkX, checkY] != null)
+                    {
+                        Fruit neighbor = allFruits[checkX, checkY].GetComponent<Fruit>();
+                        if (neighbor != null && neighbor.isBomb)
+                        {
+                            bombsToDestroy.Add(allFruits[checkX, checkY]);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Destruir as bombas encontradas
+        foreach (GameObject bomb in bombsToDestroy)
+        {
+            // Verificar se a bomba ainda existe (pode ter sido destruída em cascata)
+            if (bomb == null)
+                continue;
+
+            Fruit bf = bomb.GetComponent<Fruit>();
+            if (bf == null)
+                continue;
+
+            yield return StartCoroutine(DestroyBombAndSurrounding(bf.x, bf.y));
+        }
+    }
 
     IEnumerator ClearMatches()
     {
@@ -355,7 +551,7 @@ public class Board : MonoBehaviour
         }
 
         
-        // destruir
+        // FASE 1: Destruir frutas matched
         foreach (GameObject f in matched)
         {
             if (f == null) continue;
@@ -363,19 +559,17 @@ public class Board : MonoBehaviour
             Fruit fs = f.GetComponent<Fruit>();
             allFruits[fs.x, fs.y] = null;
 
-            // ---- explosão colocada aqui ----
+            // Explosão das frutas
             if (explosionPrefab != null)
             {
                 Instantiate(explosionPrefab, f.transform.position, Quaternion.identity);
             }
-            // --------------------------------
-
-           
 
             Destroy(f);
         }
 
-
+        // FASE 2: Destruir bombas adjacentes aos matches (com timing)
+        yield return StartCoroutine(DestroyAdjacentBombs(matched));
 
         yield return null;
     }
@@ -437,6 +631,18 @@ public class Board : MonoBehaviour
                     fs.y = y;
                     fs.type = index; // define tipo ao nascer
                     fs.board = this;
+
+                    // Chance de ser uma bomba (apenas se não atingimos o limite)
+                    if (Random.value < bombSpawnChanceRuntime && bombSprite != null && CountBombsOnBoard() < maxBombsOnBoard)
+                    {
+                        fs.isBomb = true;
+                        // Mudar sprite para bomba
+                        SpriteRenderer sr = fruit.GetComponent<SpriteRenderer>();
+                        if (sr != null)
+                        {
+                            sr.sprite = bombSprite;
+                        }
+                    }
 
                     allFruits[x, y] = fruit;
 
@@ -689,6 +895,9 @@ public class Board : MonoBehaviour
         
         if (isProcessing) return;
 
+        // Bombas não podem ser movidas
+        if (fruit.isBomb) return;
+
         // garantir valores inteiros e bloquear diagonais
         int dirX = Mathf.RoundToInt(dir.x);
         int dirY = Mathf.RoundToInt(dir.y);
@@ -708,6 +917,9 @@ public class Board : MonoBehaviour
 
         Fruit neighbor = targetObj.GetComponent<Fruit>();
         if (neighbor == null) return;
+
+        // Bombas não podem ser movidas (nem como alvo)
+        if (neighbor.isBomb) return;
 
         // inicia troca + verificação
         StartCoroutine(SwapAndCheck(fruit, neighbor));

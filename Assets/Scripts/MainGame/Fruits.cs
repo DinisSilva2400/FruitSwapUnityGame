@@ -5,6 +5,7 @@ public class Fruit : MonoBehaviour
     public int x;
     public int y;
     public int type;
+    public bool isBomb = false;
 
     public Board board;
 

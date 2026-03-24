@@ -42,6 +42,12 @@ public class ScoreManager : MonoBehaviour
         PlayParticles();
     }
 
+    public void ResetScore()
+    {
+        score = 0;
+        UpdateUI();
+    }
+
     public void EndLevel()
     {
         // Guarda o score final antes de resetar

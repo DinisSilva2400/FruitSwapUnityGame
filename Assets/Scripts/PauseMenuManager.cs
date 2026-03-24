@@ -35,6 +35,13 @@ public class PauseMenuManager : MonoBehaviour
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
+        
+        // Resetar o score quando sai do jogo
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.ResetScore();
+        }
+        
         SceneManager.LoadScene("Menu");
     }
 
