@@ -1,10 +1,22 @@
 fileFormatVersion: 2
-guid: a5286c2d408873d40968bdc70ca0fe8f
+guid: b8913ca34d7820e47b71fb7e02620e23
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6273539101773431120
-    second: blueexplosion_0
+      213: 8118564757626884941
+    second: MusicTXT_0
+  - first:
+      213: -6076224014148329450
+    second: MusicTXT_1
+  - first:
+      213: -3593486162573480694
+    second: MusicTXT_2
+  - first:
+      213: -7151371040276478855
+    second: MusicTXT_3
+  - first:
+      213: -2679394855874641547
+    second: MusicTXT_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -97,6 +109,19 @@ TextureImporter:
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -113,13 +138,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: blueexplosion_0
+      name: MusicTXT_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 612
-        height: 459
+        x: 27
+        y: 239
+        width: 92
+        height: 136
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +153,96 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0518abd0396101750800000000000000
-      internalID: 6273539101773431120
+      spriteID: d431b5012afeaa070800000000000000
+      internalID: 8118564757626884941
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MusicTXT_1
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 239
+        width: 75
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 610adfcc37aecaba0800000000000000
+      internalID: -6076224014148329450
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MusicTXT_2
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 239
+        width: 75
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a0da68ecf5f512ec0800000000000000
+      internalID: -3593486162573480694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MusicTXT_3
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 239
+        width: 32
+        height: 131
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9740e4fade931cc90800000000000000
+      internalID: -7151371040276478855
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MusicTXT_4
+      rect:
+        serializedVersion: 2
+        x: 312
+        y: 239
+        width: 74
+        height: 104
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 571459a1390e0dad0800000000000000
+      internalID: -2679394855874641547
       vertices: []
       indices: 
       edges: []
@@ -148,7 +261,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      blueexplosion_0: 6273539101773431120
+      MusicTXT_0: 8118564757626884941
+      MusicTXT_1: -6076224014148329450
+      MusicTXT_2: -3593486162573480694
+      MusicTXT_3: -7151371040276478855
+      MusicTXT_4: -2679394855874641547
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -51,7 +51,7 @@ public class RadialTimer : MonoBehaviour
         }
 
         // Carrega a cena "Menu"
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene("EndGame");
     }
 
     public void AddTime(float seconds)

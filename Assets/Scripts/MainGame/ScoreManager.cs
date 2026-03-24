@@ -7,6 +7,7 @@ public class ScoreManager : MonoBehaviour
 
     public int score;
     public int highScore;
+    public int finalScore; // Guarda o score antes de resetar
 
     [HideInInspector] public TextMeshProUGUI scoreText;
     [HideInInspector] public TextMeshProUGUI highScoreText;
@@ -43,6 +44,9 @@ public class ScoreManager : MonoBehaviour
 
     public void EndLevel()
     {
+        // Guarda o score final antes de resetar
+        finalScore = score;
+
         // Só atualiza se bater recorde
         if (score > highScore)
         {

@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class ComboVisualController : MonoBehaviour
 {
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip firstComboSound;
+    public AudioClip secondComboSound;
+    public AudioClip thirdComboSound;
+
     [Header("UI")]
     public RectTransform comboRect;
 
@@ -15,11 +22,6 @@ public class ComboVisualController : MonoBehaviour
 
     [Header("Combo Logic")]
     public float comboWindowTime = 4f;
-
-    public int comboChainCount = 0;
-    public float comboWindowStartTime = -1f;
-
-
 
     [Header("Particles")]
     public ParticleSystem comboParticles;
@@ -35,38 +37,21 @@ public class ComboVisualController : MonoBehaviour
     public float scaleUp = 1.2f;       // quanto aumenta
     public float scaleSpeed = 10f;     // velocidade do zoom
 
-    public void ShowCombo(int combo)
+    public void ShowCombo(int comboLevel)
     {
-        float currentTime = Time.time;
-
-        // Se não há combo ativo, inicia a janela
-        if (comboChainCount == 0)
-        {
-            comboWindowStartTime = currentTime;
-            comboChainCount = 1;
-        }
-        else
-        {
-            // Se ainda está dentro da janela dos 4 segundos
-            if (currentTime - comboWindowStartTime <= comboWindowTime)
-            {
-                comboChainCount++;
-            }
-            else
-            {
-                // Janela expirou → reset
-                comboWindowStartTime = currentTime;
-                comboChainCount = 1;
-            }
-        }
-
-        // Escolher sprite consoante a cadeia
-        if (comboChainCount == 1)
+        // Escolher sprite consoante o nível
+        if (comboLevel == 1){
             comboImage.sprite = comboSprite1;
-        else if (comboChainCount == 2)
+            audioSource.PlayOneShot(firstComboSound);
+        }
+        else if (comboLevel == 2){
             comboImage.sprite = comboSprite2;
-        else
+            audioSource.PlayOneShot(secondComboSound);
+        }
+        else if (comboLevel >= 3){
             comboImage.sprite = comboSprite3;
+            audioSource.PlayOneShot(thirdComboSound);
+        }
 
         gameObject.SetActive(true);
 
@@ -80,7 +65,7 @@ public class ComboVisualController : MonoBehaviour
     {
         comboRect.gameObject.SetActive(true);
 
-        // ✅ Ativar partículas
+        // Ativar partículas
         if (comboParticles != null)
             comboParticles.Play();
 
@@ -88,22 +73,22 @@ public class ComboVisualController : MonoBehaviour
         comboRect.localScale = Vector3.one;
         comboRect.anchoredPosition = new Vector2(0, offscreenY);
 
-        // ↓ descer até ao meio
+        // descer até ao meio
         while (comboRect.anchoredPosition.y > middleY)
         {
             comboRect.anchoredPosition += Vector2.down * speed * Time.deltaTime;
             yield return null;
         }
 
-        // 🔍 ZOOM IN
+        // ZOOM IN
         yield return StartCoroutine(ScaleTo(Vector3.one * scaleUp));
 
         yield return new WaitForSeconds(pauseInMiddle);
 
-        // 🔙 ZOOM OUT
+        // ZOOM OUT
         yield return StartCoroutine(ScaleTo(Vector3.one));
 
-        // ↓ sair por baixo
+        // sair por baixo
         while (comboRect.anchoredPosition.y > -offscreenY)
         {
             comboRect.anchoredPosition += Vector2.down * speed * Time.deltaTime;
@@ -112,7 +97,7 @@ public class ComboVisualController : MonoBehaviour
 
         comboRect.gameObject.SetActive(false);
 
-        // ✅ Parar partículas
+        // Parar partículas
         if (comboParticles != null)
             comboParticles.Stop();
     }

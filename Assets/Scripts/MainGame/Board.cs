@@ -10,6 +10,7 @@ public class Board : MonoBehaviour
     public int height = 8;
     public GameObject[] fruits;
     public float swapSpeed = 0.2f;
+    public float boardYOffset = 0.6f; // ajusta a posição vertical do board para cima
 
     [Header("Effects")]
     public GameObject explosionPrefab; // arrasta aqui o prefab da explosão
@@ -48,6 +49,7 @@ public class Board : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = 60;
         Time.timeScale = 1f;
 
         allFruits = new GameObject[width, height];
@@ -60,7 +62,9 @@ public class Board : MonoBehaviour
             musicSource.loop = true;
             musicSource.Play();
         }
+        
     }
+
 
     // -----------------------------------------------------
     // GERAR TABULEIRO
@@ -91,7 +95,7 @@ public class Board : MonoBehaviour
                     index = Random.Range(0, fruits.Length);
                 }
 
-                Vector3 pos = new Vector3(x - offset.x, y - offset.y, 0);
+                Vector3 pos = new Vector3(x - offset.x, y - offset.y + boardYOffset, 0);
 
                 GameObject fruit = Instantiate(fruits[index], pos, Quaternion.identity);
                 fruit.transform.parent = this.transform;
@@ -333,6 +337,11 @@ public class Board : MonoBehaviour
         }
 
         int earnedPoints = totalMatched * pointsPerFruit;
+        
+        // Aplicar multiplicador de pontos do combo
+        int pointsMultiplier = ComboManager.Instance.GetPointsMultiplier();
+        earnedPoints *= pointsMultiplier;
+        
         if (ScoreManager.Instance != null)
         {
             ScoreManager.Instance.AddScore(earnedPoints);
@@ -416,7 +425,7 @@ public class Board : MonoBehaviour
 
                     Vector3 spawnPos = new Vector3(
                         x - width / 2f + 0.5f,
-                        height + 2,
+                        height / 2f + 1.5f + boardYOffset,
                         0
                     );
 
@@ -451,7 +460,7 @@ public class Board : MonoBehaviour
         Vector3 start = fruit.transform.position;
         Vector3 end = new Vector3(
             x - width / 2f + 0.5f,
-            y - height / 2f + 0.5f,
+            y - height / 2f + 0.5f + boardYOffset,
             0
         );
 
